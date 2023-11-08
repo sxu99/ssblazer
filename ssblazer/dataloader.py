@@ -35,7 +35,7 @@ def collate_fn(data):
 class DatasetFromStr(Dataset):
     def __init__(self, seq):
         start_pos=0
-        end_pos=151
+        end_pos=251
         seq_clip_list=[]
         while(end_pos<=len(seq)):
             seq_clip=seq[start_pos:end_pos]
