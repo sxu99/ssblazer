@@ -23,7 +23,7 @@ def do_pred(url, batch_size):
         pred_list = pred_list+pred
 
     pred_len = len(pred_list)
-    end_pos = list(range(76, pred_len+76, 1))
+    end_pos = list(range(126, pred_len+126, 1))
     start_pos=[i - 1 for i in end_pos]
 
     df=pd.DataFrame({'start':start_pos,'end':end_pos,'score':pred_list})
