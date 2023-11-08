@@ -1,6 +1,7 @@
 # SSBlazer
 SSBlazer is the first attempt to exploit the deep learning technique for SSB site prediction based on genome-wide single-strand break sequencing data with single-nucleotide resolution.
 
+[**SSBlazer Manual**](https://sxu99.gitbook.io/ssblazer/)
 ## Environment setup
 
 ### First, download the repository and create the environment.
