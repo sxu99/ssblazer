@@ -4,7 +4,6 @@ from ssblazer.dataloader import *
 from utils import *
 import matplotlib.pyplot as plt
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
-from lightning.pytorch.loggers import NeptuneLogger
 import lightning.pytorch as pl
 from lightning.pytorch.callbacks import LearningRateMonitor, TQDMProgressBar
 
@@ -72,7 +71,6 @@ if __name__ == "__main__":
     set_root_logging()
     set_logging("lightning.pytorch")
     set_logging("torch")
-    set_logging("neptune")
 
     model_dir = "./models"
 

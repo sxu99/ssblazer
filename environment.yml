@@ -31,4 +31,7 @@ dependencies:
     - tqdm==4.64.0
     - typing-extensions==4.3.0
     - urllib3==1.26.11
+    - tensorboard==2.7.1
+    - future==0.18.2
+    - pytorch-lightning==1.4.9
 prefix: /home/shengxu/.conda/envs/ssblazer
