@@ -33,7 +33,9 @@ Follow these steps to set up the SSBlazer environment:
 
 To annotate Single-Strand Break (SSB) sites on a genome, use the `genome_pred.py` script. This script reads a FASTA file, predicts SSB sites, and outputs the predictions in BED format:
 
-```python genome_pred.py --in chr1.fa --out chr1_annotated.bed --batchsize 128```
+```
+python genome_pred.py --in chr1.fa --out chr1_annotated.bed --batchsize 128
+```
 
 - `--in chr1.fa`: Specifies the input FASTA file for the genome to be annotated.
 - `--out chr1_annotated.bed`: Specifies the output BED file where the annotations will be written.
@@ -43,7 +45,9 @@ To annotate Single-Strand Break (SSB) sites on a genome, use the `genome_pred.py
 
 Perform mutation prediction using the following command:
 
-```python pred_mutation.py --genome hg19 --chr chr14 --pos 73659501 --ref 'T' --alt 'C'```
+```
+python pred_mutation.py --genome hg19 --chr chr14 --pos 73659501 --ref 'T' --alt 'C'
+```
 
 - `--genome hg19`: Specifies the genome version.
 - `--chr chr14`: Represents the chromosome of interest.
@@ -55,7 +59,9 @@ Perform mutation prediction using the following command:
 
 Train a new model using your datasets:
 
-```python train_from_scratch.py --train train.csv --test test.csv```
+```
+python train_from_scratch.py --train train.csv --test test.csv
+```
 
 The model weights will be saved in the `./models` directory. After the model is trained, you can use it to predict break sites on new data by loading the model weights.
 
