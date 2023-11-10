@@ -1,6 +1,5 @@
 import argparse
-from ssblazer.my_model import *
-from ssblazer.dataloader import *
+from ssblazer.my_model import SSBlazer
 from Bio import SeqIO
 from tqdm import tqdm
 import numpy as np
@@ -34,11 +33,10 @@ parser.add_argument("--file", type=str, help="Input fasta file path")
 parser.add_argument("--batchsize", type=int, help="Batch size for processing")
 args = parser.parse_args()
 
-model = SSBlazer(warmup=1, max_epochs=1, lr=1e-3, length=251)
+model = SSBlazer(warmup=1, max_epochs=1, lr=1e-3)
 
 ckpt = torch.load("./ssblazer/ssblazer.pkl", map_location="cpu")
 model.load_state_dict(ckpt["state_dict"])
-model = model.half()
 model.eval()
 
 BATCH_SIZE = args.batchsize
@@ -47,11 +45,11 @@ output_data = []
 
 with torch.no_grad():
     fragments = []
-    for i, fragment in tqdm(enumerate(sliding_window(str(fa), 251))):
+    for i, fragment in tqdm(enumerate(sliding_window(str(fa.seq), 251))):
         fragments.append(fragment)
         if len(fragments) == BATCH_SIZE:
             encoded_sequences = np.array([encode_single(seq) for seq in fragments])
-            batch = {"seq": torch.from_numpy(encoded_sequences)}
+            batch = {"seq": torch.from_numpy(encoded_sequences).float()}
             break_probs = model.forward(batch)[1]
             for j, break_prob in enumerate(break_probs):
                 output_data.append(
@@ -60,7 +58,7 @@ with torch.no_grad():
             fragments = []
     if fragments:
         encoded_sequences = np.array([encode_single(seq) for seq in fragments])
-        batch = {"seq": torch.from_numpy(encoded_sequences)}
+        batch = {"seq": torch.from_numpy(encoded_sequences).float()}
 
         break_probs = model.forward(batch)[1]
 

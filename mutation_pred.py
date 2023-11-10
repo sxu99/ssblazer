@@ -1,10 +1,11 @@
 import argparse
-from ssblazer.my_model import *
-from ssblazer.dataloader import *
+from ssblazer.my_model import SSBlazer
 from Bio import SeqIO
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import pandas as pd
 
 nucleobase_mapping = {
     "A": [1, 0, 0, 0],
@@ -44,7 +45,7 @@ def get_seq_list(genome, pos, half_length, half_window_size):
 
 def pred(model, seq_list):
     encoded_sequences = np.array([encode_single(seq) for seq in seq_list])
-    batch = {"seq": torch.from_numpy(encoded_sequences)}
+    batch = {"seq": torch.from_numpy(encoded_sequences).float()}
     break_probs = model.forward(batch)[1]
     return break_probs.detach().tolist()
 
@@ -57,7 +58,7 @@ def main():
     parser.add_argument('--alt', type=str, help='Alternate allele.')
     args = parser.parse_args()
 
-    model = SSBlazer(warmup=1, max_epochs=1, lr=1e-3, length=251)
+    model = SSBlazer(warmup=1, max_epochs=1, lr=1e-3)
     ckpt = torch.load("./ssblazer/ssblazer.pkl", map_location="cpu")
     model.load_state_dict(ckpt["state_dict"])
     model.eval()
@@ -70,7 +71,7 @@ def main():
     half_length = 125
     half_window_size = 125
 
-    genome = SeqIO.read(f"/mnt/petrelfs/xusheng1/SSB/Data/{args.genome}/{chr}.fa", "fasta")
+    genome = SeqIO.read(f"./genome/{args.genome}/{chr}.fa", "fasta")
     genome_complement = genome.seq.complement()
     genome = str(genome.seq)
     genome_complement = str(genome_complement)
@@ -97,14 +98,11 @@ def main():
         ref_seq_probs = pred(model, ref_seq_list)
         mutant_seq_probs = pred(model, mutant_seq_list)
 
-        print(ref_seq_probs)
-        print(mutant_seq_probs)
-
         fig, axs = plt.subplots(2)
 
         axs[0].plot(ref_seq_probs)
         axs[0].set_title("Ref Seq Probs")
-        axs[0].set_xticks[0, 125, 251]
+        axs[0].set_xticks([0, 125, 251])
         axs[0].set_xticklabels(["-125", "0", "+125"])
         axs[0].set_ylim([0, 1])
 
@@ -115,11 +113,19 @@ def main():
         axs[1].set_ylim([0, 1])
         plt.title("{}:{} {}->{}".format(chr, str(idx + 1), nt, snp))
         plt.subplots_adjust(hspace=0.5)
+        os.makedirs("./snp", exist_ok=True)
         plt.savefig(
             "./snp/{}:{}_{}->{}.png".format(chr, str(idx + 1), nt, snp),
             dpi=600,
             bbox_inches="tight",
         )
+
+        df = pd.DataFrame({
+            'Ref Probs': ref_seq_probs,
+            'Mutant Probs': mutant_seq_probs
+        })
+
+        df.to_csv('./snp/{}:{}_{}->{}.csv'.format(chr, str(idx + 1), nt, snp), index=False)
 
 
 if __name__ == "__main__":

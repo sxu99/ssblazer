@@ -1,7 +1,5 @@
 from lightning.pytorch import LightningModule
-import torch.nn.functional as F
 import torch
-from dataloader import *
 import numpy as np
 from lightning.pytorch.utilities.rank_zero import rank_zero_info
 import torch.nn as nn

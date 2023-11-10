@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import Dataset
 import pandas as pd
 import os
+from lightning.pytorch import LightningDataModule
 
 class DatasetFromCSV(Dataset):
     def __init__(self, csv_path, bootstrap=False):

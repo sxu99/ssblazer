@@ -1,10 +1,10 @@
 import argparse
-from ssblazer.my_model import *
-from ssblazer.dataloader import *
+from ssblazer.my_model import SSBlazer
 from Bio import SeqIO
 from tqdm import tqdm
 import torch
 import numpy as np
+import os
 
 nucleobase_mapping = {
     "A": [1, 0, 0, 0],
@@ -30,13 +30,15 @@ def sliding_window(sequence, window_size):
 
 
 def main(args):
-    model = SSBlazer(warmup=1, max_epochs=1, lr=1e-3, length=251)
+    model = SSBlazer(warmup=1, max_epochs=1, lr=1e-3)
 
     BATCH_SIZE = args.batchsize
     ckpt = torch.load("./ssblazer/ssblazer.pkl", map_location="cpu")
     model.load_state_dict(ckpt["state_dict"])
     model.eval()
     fa = args.infile
+    base = os.path.basename(fa)
+    chr = os.path.splitext(base)[0]
     genome = SeqIO.read(fa, "fasta")
     output_data = []
     with torch.no_grad():
@@ -45,23 +47,23 @@ def main(args):
             fragments.append(fragment)
             if len(fragments) == BATCH_SIZE:
                 encoded_sequences = np.array([encode_single(seq) for seq in fragments])
-                batch = {"seq": torch.from_numpy(encoded_sequences)}
+                batch = {"seq": torch.from_numpy(encoded_sequences).float()}
                 break_probs = model.forward(batch)[1]
                 for j, break_prob in enumerate(break_probs):
                     output_data.append(
-                        f"chr1\t{i - BATCH_SIZE + j + 126}\t{i - BATCH_SIZE + j + 126 + 1}\t{break_prob.item()}\n"
+                        f"{chr}\t{i - BATCH_SIZE + j + 126}\t{i - BATCH_SIZE + j + 126 + 1}\t{break_prob.item()}\n"
                     )
                 fragments = []
         # Handle remaining sequences if they are less than BATCH_SIZE
         if fragments:
             encoded_sequences = np.array([encode_single(seq) for seq in fragments])
-            batch = {"seq": torch.from_numpy(encoded_sequences)}
+            batch = {"seq": torch.from_numpy(encoded_sequences).float()}
 
             break_probs = model.forward(batch)[1]
 
             for j, break_prob in enumerate(break_probs):
                 output_data.append(
-                    f"chr1\t{i - len(fragments) + j + 126}\t{i - len(fragments) + j + 126 + 1}\t{break_prob.item()}\n"
+                    f"{chr}\t{i - len(fragments) + j + 126}\t{i - len(fragments) + j + 126 + 1}\t{break_prob.item()}\n"
                 )
 
     with open(args.outfile, "w") as f:

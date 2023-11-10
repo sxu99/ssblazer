@@ -1,11 +1,9 @@
 import argparse
-from ssblazer.my_model import *
-from ssblazer.dataloader import *
+from ssblazer.my_model import SSBlazer
+from ssblazer.dataloader import DatasetFromCSV,DataModule
 from utils import *
-import matplotlib.pyplot as plt
-from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
+from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint,TQDMProgressBar
 import lightning.pytorch as pl
-from lightning.pytorch.callbacks import LearningRateMonitor, TQDMProgressBar
 
 
 def train(train_path, test_path, model_dir):
@@ -16,6 +14,9 @@ def train(train_path, test_path, model_dir):
     warmup_epochs = 5
     precision = 16
     lr = 0.001
+
+    if n_gpus == 0:
+        raise Exception("No GPU found")
 
     params = {
         "batchsize": batch_size,
@@ -74,4 +75,6 @@ if __name__ == "__main__":
 
     model_dir = "./models"
 
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
     train(args.train, args.test, model_dir)
