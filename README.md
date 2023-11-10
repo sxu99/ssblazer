@@ -46,7 +46,7 @@ python genome_pred.py --in chr1.fa --out chr1_annotated.bed --batchsize 128
 Perform mutation prediction using the following command:
 
 ```
-python pred_mutation.py --genome hg19 --chr chr14 --pos 73659501 --ref 'T' --alt 'C'
+python pred_mutation.py --genome hg19 --chr chr14 --pos 73659501 --ref T --alt C
 ```
 
 - `--genome hg19`: Specifies the genome version.
