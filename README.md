@@ -4,6 +4,8 @@ SSBlazer is a pioneering tool that utilizes deep learning to predict Single Stra
 
 Access the complete [SSBlazer Manual](https://sxu99.gitbook.io/ssblazer/) for more details.
 
+[![DOI](https://zenodo.org/badge/513806458.svg)](https://zenodo.org/doi/10.5281/zenodo.10433085)
+
 ## Environment Setup
 
 Follow these steps to set up the SSBlazer environment:
